@@ -1,8 +1,10 @@
 -- 테이블간 조인(JOIN) SQL 문제입니다.
 
--- 문제 1. 현재 급여가 많은 직원부터 직원의 사번, 이름, 그리고 연봉을 출력 하시오.  ????
-select e.emp_no,e.first_name,s.salary from salaries s, employees e where s.emp_no=e.emp_no
- and s.to_date>=sysdate() and s.from_date<=sysdate() order by s.salary desc  ;
+-- 문제 1. 현재 급여가 많은 직원부터 직원의 사번, 이름, 그리고 연봉을 출력 하시오.   
+select e.emp_no,e.first_name,s.salary from salaries s, employees e 
+where s.emp_no=e.emp_no
+ and s.to_date='9999-01-01'
+ order by s.salary desc  ;
  
 -- 문제2. 전체 사원의 사번, 이름, 현재 직책을 이름 순서로 출력하세요.
 select e.emp_no,concat(e.first_name,' ',e.last_name) as ename , t.title 
@@ -29,46 +31,52 @@ select e.emp_no,concat(e.first_name,' ',e.last_name) as ename from titles t, emp
 t.title='Technique Leader' and t.to_date<sysdate() ;
 
 
--- 문제6. 직원 이름(last_name) 중에서 S(대문자)로 시작하는 직원들의 이름, 부서명,직책을 조회하세요.
--- ??????
+-- 문제6. 직원 이름(last_name) 중에서 S(대문자)로 시작하는 직원들의 이름, 부서명,직책을 조회하세요. -- ??????
 select e.emp_no,concat(e.first_name,' ',e.last_name) as ename ,d.dept_name, t.title
 from dept_emp de, employees e,departments d, titles t 
 where de.emp_no=e.emp_no and d.dept_no=de.dept_no and t.emp_no=de.emp_no
    and e.last_name like 'S%' ;
   
 
--- 문제7. 현재, 직책이 Engineer인 사원 중에서 현재 급여가 40000 이상인 사원을 급여가 큰 순서대로 출력하세요. - ??????
-select * from titles t, salaries s where t.emp_no=s.emp_no and  t.to_date>=sysdate() and t.from_date<=sysdate()
- and t.title='Engineer' group by t.emp_no having salary>=4000  order by salary desc;
-
+-- 문제7. 현재, 직책이 Engineer인 사원 중에서 현재 급여가 40000 이상인 사원을 급여가 큰 순서대로 출력하세요.  
+select  concat(e.first_name,' ',e.last_name) , s.salary , t.title
+from titles t, salaries s,employees e 
+where e.emp_no=s.emp_no
+and t.emp_no=s.emp_no 
+and t.to_date>=sysdate() 
+and t.from_date<=sysdate()
+and s.to_date>=sysdate() 
+and s.from_date<=sysdate()
+ and t.title='Engineer'  and s.salary>=40000 order by s.salary desc;
+ 
 
 -- 문제8. 현재 급여가 50000이 넘는 직책을 직책, 급여로 급여가 큰 순서대로 출력하시오 ??????
-select *,sum(s.salary) ss from titles t, salaries s where t.emp_no=s.emp_no 
-and s.to_date>=sysdate() and s.from_date<=sysdate() group by t.title having  ss>=50000 order by ss desc;
+select t.title, s.salary  from titles t, salaries s 
+where t.emp_no=s.emp_no 
+ and s.to_date='9999-01-01'
+ and t.to_date='9999-01-01'
+and s.salary>50000 group by title order by s.salary desc
+ ;
 
-select * from titles t, salaries s where t.emp_no=s.emp_no 
-and s.to_date>=sysdate() and s.from_date<=sysdate() group by t.title  ;
-
-
-
-
-select a.title, a.salary from (
-select t.title,s.salary from titles t, salaries s where t.emp_no=s.emp_no and  
-t.to_date>=sysdate() and t.from_date<=sysdate()
-  group by t.emp_no having salary>=5000   ) a group by title order by a.salary desc;
- 
-  
--- 문제9. 현재, 부서별 평균 연봉을 연봉이 큰 부서 순서대로 출력하세요. ????
-    select  avg(s.salary) from dept_emp de,  salaries s 
-    where de.emp_no=s.emp_no   and
-    de.to_date>=sysdate() and de.from_date<=sysdate() 
-    and  s.to_date>=sysdate() and s.from_date<=sysdate() group by de.dept_no order by s.salary desc ;
 
   
- -- 문제10. 현재, 직책별 평균 연봉을 연봉이 큰 직책 순서대로 출력하세요. ????
-select * from titles t, salaries s where t.emp_no=s.emp_no
-and  s.to_date>=sysdate() and s.from_date<=sysdate() 
- group by t.title ;
+-- 문제9. 현재, 부서별 평균 연봉을 연봉이 큰 부서 순서대로 출력하세요.  
+    select d.dept_name, avg(s.salary) from dept_emp de,  salaries s ,departments d
+    where de.emp_no=s.emp_no  
+    and d.dept_no=de.dept_no 
+    and  de.to_date='9999-01-01'
+	and s.to_date='9999-01-01'
+    group by de.dept_no 
+    order by avg(s.salary) desc ;
+
+  
+ -- 문제10. 현재, 직책별 평균 연봉을 연봉이 큰 직책 순서대로 출력하세요.  
+select t.title , avg(s.salary) as avg_sal from titles t, salaries s 
+where t.emp_no=s.emp_no
+and  s.to_date='9999-01-01'
+and t.to_date='9999-01-01'
+ group by t.title order by avg_sal desc
+;
 
 
 
